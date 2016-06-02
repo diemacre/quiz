@@ -29,7 +29,7 @@ Comment.belongsTo(Quiz);
 Quiz.hasMany(Comment);
 
 //sequelize.sync() crea e inicializa tabla de preguntas de DB
-/*sequelize.sync()
+/* sequelize.sync()
 .then( function(){ //sync() crea la tabla quiz
 	return Quiz.count()
 		.then(function(c) {

@@ -1,14 +1,11 @@
 var models = require('../models');
-var Sequelize = require("sequelize/lib/errors.js");
+var Sequelize = require('sequelize');
 
 //GET /quizzes/:quizId/comments/new
 exports.new = function (req, res, next){
     var comment = models.Comment.build({text: ""});
     res.render('comments/new', {comment: comment,
-        quiz: req.quiz})
-        .catch(function (error) {
-            next(error);
-        });
+        quiz: req.quiz});
 };
 
 // POST /quizzes/:quizId/comments

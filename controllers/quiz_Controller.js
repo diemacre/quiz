@@ -1,11 +1,11 @@
 var models = require('../models');
-var Sequelize = require("sequelize/lib/errors.js");
+var Sequelize = require("sequelize");
 
 
 
 //autoload el quiz asociado a :quizId
 exports.load = function(req, res, next, quizId) {
-	models.Quiz.findById(quizId, {include:[models.Comment]})
+	models.Quiz.findById(quizId, {include:[ models.Comment ]})
 	.then(function(quiz){
 		if(quiz) {
 			req.quiz=quiz;
