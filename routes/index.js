@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var quizController = require('../controllers/quiz_Controller');
-
+var commentController= require('../controllers/comment_Controller')
 //pagina de Entrada
 router.get('/', function(req, res) {
 	res.render('index', { title: 'Quiz'});
@@ -21,6 +21,8 @@ router.get('/quizzes/:quizId(\\d+)/edit',			quizController.edit);
 router.put('/quizzes/:quizId(\\d+)',				quizController.update);
 router.delete('/quizzes/:quizId(\\d+)', 			quizController.destroy);
 
+router.get('/quizzes/:quizId(\\d+)/comments/new',			commentController.new);
+router.post('/quizzes/:quizId(\\d+)/comments',			commentController.create);
 
 router.get('/author', function(req, res, next){
 	res.render('author', { github:'<a href="https://github.com/diemacre/quiz">Proyecto en github</a>',

@@ -17,3 +17,4 @@ module.exports = {
     return queryInterface.bulkDelete('Quizzes', null, {});
   }
 };
+
