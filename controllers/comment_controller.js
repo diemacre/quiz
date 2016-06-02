@@ -13,11 +13,13 @@ exports.new = function (req, res, next){
 
 // POST /quizzes/:quizId/comments
 exports.create = function(req, res, next){
-    var comment = models.Comment.build({ text: req.body.comment.text,
-        QuizId: req.quiz.id});
+    var comment = models.Comment.build(
+        { text: req.body.comment.text,
+        QuizId: req.quiz.id
+        });
 
     //Guarda en DB los campos pregunta y respuesta de quiz
-    quiz.save()
+    comment.save()
         .then(function (comment) {
             req.flash('success', "Comentario creado con exito");
             res.redirect('/quizzes/'+ req.quiz.id); //res.redirect: Redireccion HTTP a lista de preguntas
@@ -27,7 +29,7 @@ exports.create = function(req, res, next){
             for( var i in error.errors){
                 req.flash('error', error.errors[i].value);
             };
-            res.render('quizzes/new', {comment: comment,
+            res.render('comments/new', {comment: comment,
                 quiz: req.quiz});
         })
         .catch(function (error) {
