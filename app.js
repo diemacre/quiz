@@ -80,7 +80,26 @@ if (app.get('env') === 'development') {
     });
   });
 }
-
+//Autologout
+app.use(function (req, res, next) {
+ //Comprobamos sesion
+   if(req.session.user){
+     var minutes = 1000*60;
+     var date = new Date();
+     var time = date.getTime();
+     if(time > req.session.user.expiratesAt){ //comprobamos si ha expirado la sesión
+       delete req.session.user;
+       req.flash('error', 'La sesión ha expirado');
+       res.redirect('/');
+       next();
+     } else {//aumentamos el tiempo de expiración
+       req.session.user.expiratesAt = time + minutes * 2;
+       next();
+     }
+   } else{
+     next();
+   }
+ })
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
