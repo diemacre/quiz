@@ -1,6 +1,6 @@
 var models = require('../models');
 var Sequelize = require("sequelize");
-
+var paginate = require('./paginate').paginate;
 
 
 //autoload el quiz asociado a :userId
@@ -19,13 +19,41 @@ exports.load = function(req, res, next, userId) {
         .catch(function(error) { next(error); });
 };
 
-//GET / users
-exports.index = function(req, res, next){
-        models.User.findAll({ order: ['username'] })
-            .then(function (users) {
-                    res.render ('users/index', { users: users});
-            })
-            .catch(function(error) { next(error);});
+/// GET /users
+exports.index = function(req, res, next) {
+
+    models.User.count()
+    .then(function(count) {
+
+        // Paginacion:
+
+        var items_per_page = 6;
+
+        // La pagina a mostrar viene en la query
+        var pageno = parseInt(req.query.pageno) || 1;
+
+        // Datos para obtener el rango de datos a buscar en la BBDD.
+        var pagination = {
+            offset: items_per_page * (pageno - 1),
+            limit: items_per_page
+        };
+
+        // Crear un string con el HTML que pinta la botonera de paginacion.
+        // Lo añado como una variable local de res para que lo pinte el layout de la aplicacion.
+        res.locals.paginate_control = paginate(count, items_per_page, pageno, req.url);
+
+        return pagination;
+    })
+    .then(function(pagination) {
+
+        return models.User.findAll({offset: pagination.offset,
+                                    limit: pagination.limit,
+                                    order: ['username']});
+    })
+    .then(function(users) {
+        res.render('users/index', { users: users });
+    })
+    .catch(function(error) { next(error); });
 };
 
 
@@ -39,7 +67,7 @@ exports.show = function(req, res, next){
 //GET /users/new
 exports.new = function (req, res, next){
     var user = models.User.build({username: "", password: ""});
-    res.render('quizzes/new', {user: user});
+    res.render('users/new', {user: user});
 };
 
 
@@ -61,7 +89,7 @@ exports.create = function(req, res, next){
                 return user.save({fields: ["username", "password", "salt"]})
                     .then(function (user) {//renderizar pagina de usuarios
                         req.flash('success', 'Usuario creado con exito.');
-                        res.redirect('/users');
+                        res.redirect('/session');
                     })
                     .catch(Sequelize.ValidationError, function (error) {
                         req.flash('error', 'Errores en el formulario');

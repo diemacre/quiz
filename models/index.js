@@ -25,36 +25,34 @@ var Quiz = sequelize.import(path.join(__dirname, 'quiz'));
 var Comment= sequelize.import(path.join(__dirname,'comment'));
 //importar la definicion de la tabla users de user.js
 var User=sequelize.import(path.join(__dirname,'user'));
+// Importar la definicion de la tabla Attachments de attachment.js
+var Attachment = sequelize.import(path.join(__dirname,'attachment'));
 
-//relaciones entre modelos
+// Favoritos:
+//   Un Usuario tiene muchos quizzes favoritos.
+//   Un quiz tiene muchos fans (los usuarios que lo han marcado como favorito)
+User.belongsToMany(Quiz, {as: 'Favourites', 
+                          through: 'Favourites'});
+Quiz.belongsToMany(User, {as: 'Fans',
+                          through: 'Favourites'}); 
+
+// Relaciones entre modelos
 Comment.belongsTo(Quiz);
 Quiz.hasMany(Comment);
 
-//sequelize.sync() crea e inicializa tabla de preguntas de DB
-/* sequelize.sync()
-.then( function(){ //sync() crea la tabla quiz
-	return Quiz.count()
-		.then(function(c) {
-			if (c===0) { //la tabla se inicializa si esta vacia
-				return Quiz
-					.bulkCreate([ {question: 'Capital de Italia', 	answer: 'Roma' },
-								  {question: 'Capital de Portugal', answer: 'Lisboa'},
-								  {question: 'Capital de España', answer: 'Madrid'},
-								  {question: 'Capital de Francia', answer:'Paris'},
-								  {question: 'Capital de Belgica', answer: 'Bruselas'}
-								   ])
-					.then (function() {
-						console.log('Base de datos inicializada con datos');
-					});
-			}
-		});
-}).catch(function(error){
-	console.log("Error Sincronizando las tablas de la BBDD:", error);
-	process.exit(1);
-});
-*/
+// Relacion 1 a N entre User y Quiz:
+User.hasMany(Quiz, {foreignKey: 'AuthorId'});
+Quiz.belongsTo(User, {as: 'Author', foreignKey: 'AuthorId'});
 
-exports.Quiz = Quiz; // exportar definición de tabla Quiz
-exports.Comment= Comment;// exporta definicion de tabla Comments
-exports.User=User;// exporta definicion de Users
+// Relacion 1-a-1 ente Quiz y Attachment
+Attachment.belongsTo(Quiz);
+Quiz.hasOne(Attachment);
+
+
+exports.Quiz = Quiz;       // exportar definición de tabla Quiz
+exports.Comment = Comment; // exportar definición de tabla Comments
+exports.User = User;       // exportar definición de tabla Users
+exports.Attachment = Attachment; // exportar definición de tabla Attachments
+
+
 

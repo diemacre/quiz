@@ -1,81 +1,97 @@
 <!DOCTYPE html>
-	<html>
-		<head>
-			<meta charset="utf-8"> <tittle> Preguntas </tittle>
-			<link rel="stylesheet" href="/stylesheets/style.css"/>
-			<link rel="stylesheet" type="text/css" 
-				  media="only screen and (min-width: 800px) and (min-device-width:600px)"
-				  href="/stylesheets/wide.css"/>
-			<link rel="stylesheet" type="text/css" 
-				  media="only screen and (max-width: 480px)"
-				  href="/stylesheets/smartphone.css"/>
-			<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-		</head>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="referrer" content="always" />
+  <title> Preguntas </title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link rel='stylesheet' 
+        type='text/css'
+        media='only screen and (min-width: 800px) and (min-device-width: 600px)'
+        href='/stylesheets/wide.css' />
+  <link rel='stylesheet'
+        type='text/css'
+        media='only screen and (max-width: 480px)' 
+        href='/stylesheets/smartphone.css' />
+</head> 
 
-		<body>
-			<div id="page">
-				<header class="main">
-					<h2>Quiz:
-						<span class="no-narrow">el Juego de las preguntas</span>
-					</h2>
-				</header>
+<body>
+  <div id="page">
+    <header class="main">
 
-				<nav class="main" role="navigation">
-					<a href="/">Inicio</a>
-					<a href="/quizzes">Preguntas</a>
-					<a href="/users">Usuarios</a>
+        <div class="right">
+          <% if (!session.user) { %>
+              <a href="/users/new">Registrarse</a> 
+              <a href="/session">Login</a>
+          <% } else { %>
+              <%= session.user.username %> 
+              <a href="/users/<%= session.user.id %>">Perfil</a>
+              <a href="/session?_method=DELETE">Logout</a>
+          <% } %>
+        </div>
 
-				</nav>
+      <h2>Quiz<span class="no-narrow">: el juego de las preguntas</span></h2>
+    </header>
 
-				<section class="flash-messages">
-					<% if (messages.info) { %>
-						<article id="flashinfo">
-							<h3>Información de interés:</h3>
-							<ul>
-								<% for (var i in messages.info) {%>
-									<li> <%= messages.info[i]%> </li>
-								<% }%>
-							</ul>
-						</article>
-					<% } %>
+      <nav class="main" role="navigation">
+        <a href="/">Inicio</a>
+        <a href="/quizzes">Preguntas</a>
+        <% if (session.user) { %>
+            <a href="/users/<%= session.user.id %>/quizzes">Mis Preguntas</a>
+        <% } %>
+        <% if (session.user) { %>
+            <a href="/users/<%=session.user.id%>/favourites">Mis Favoritos </a>
+        <% } %>
+        <a href="/users">Usuarios</a>
+      </nav>
 
-					<% if (messages.success){%>
-						<article id="flashsuccess">
-							<h3>Tareas completadas con éxito:</h3>
-							<ul>
-								<% for (var i in  messages.success){ %>
-									<li> <%= messages.success[i] %></li>
-								<% } %>
-							</ul>
-						</article>
-					<% } %>
+       <section>
+            <% if (messages.info) { %>
+               <article id='flashinfo'>
+                 <h3>Información de interés:</h3>
+                 <ul>
+                    <% for (var i in messages.info) { %>
+                      <li> <%= messages.info[i] %> </li>
+                    <% } %>
+                 </ul>
+               </article>
+            <% } %>
 
-					<% if (messages.error) { %>
-						<article id="flasherror">
-							<h3>Errores encontrados</h3>
-							<ul>
-								<% for (var i in messages.error) { %>
-									<li> <%= messages.error[i]%></li>
-								<% } %>
-							</ul>
-						</article>
-					<% } %>
+            <% if (messages.success) { %>
+               <article id='flashsuccess'>
+                 <h3>Tareas completadas con éxito:</h3>
+                 <ul>
+                    <% for (var i in messages.success) { %>
+                       <li> <%= messages.success[i] %> </li>
+                    <% } %>
+                 </ul>
+               </article>
+            <% } %>
 
+            <% if (messages.error) { %>
+               <article id='flasherror'>
+                 <h3>Errores encontrados:</h3>
+                 <ul>
+                    <% for (var i in messages.error) { %>
+                      <li> <%= messages.error[i] %> </li>
+                    <% } %>
+                 </ul>
+               </article>
+            <% } %>
+       </section>
 
-				</section>
+      <section class="main">
+        <div>
+          <%- body %>
+        </div>
+      </section>
 
-				<section class="main">
-					<div>
-						<%- body %>
-					</div>
-				</section>	
-				
-				<footer class="main">
-					<p><a href="https://github.com/diemacre/quiz">Proyecto en github</a></p>
-					<p><a href="http://es.wikipedia.org/wiki/Quiz">¿Qué es un Quiz?</a></p>
-					<p><a href="/author">Acerca de los Autores</a></p>
-				</footer>
-			</div>	
-		</body>
-	</html>		
-
+    <footer class="main">
+      <p><a href="https://github.com/diemacre/quiz">Proyecto en github</a></p>
+          <p><a href="http://es.wikipedia.org/wiki/Quiz">¿Qué es un Quiz?</a></p>
+          <p><a href="/author">Acerca de los Autores</a></p>
+    </footer>
+  </div>
+</body> 
+</html>

@@ -4,38 +4,61 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
-var routes = require('./routes/index');
-var app = express();
 var session = require('express-session');
 var partials = require('express-partials');
 var flash = require('express-flash');
 var methodOverride = require('method-override');
 
-app.use(require('json-middleware').middleware());
+var routes = require('./routes/index');
 
+var app = express();
+app.use(require('json-middleware').middleware());
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(partials());
-app.use(flash());
+
+// En produccion (Heroku) redirijo las peticiones http a https.
+// Documentacion: http://jaketrent.com/post/https-redirect-node-heroku/
+if (app.get('env') === 'production') {
+    app.use(function(req, res, next) {
+        if (req.headers['x-forwarded-proto'] !== 'https') {
+            res.redirect('https://' + req.get('Host') + req.url);
+        } else { 
+            next() /* Continue to other routes if we're not redirecting */
+        }
+    });
+}
+
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({secret: "Quiz 2016",
-                          resave: false,
-                          saveUninitialized: true}));
+                 resave: false,
+                 saveUninitialized: true}));
 app.use(methodOverride('_method', {methods: ["POST", "GET"]}));
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(partials());
+app.use(flash());
+
+// Helper dinamico:
+app.use(function(req, res, next) {
+
+   // Hacer visible req.session en las vistas
+   res.locals.session = req.session;
+
+  // Hacer visible req.url en las vistas
+  res.locals.url = req.url;
+  
+   next();
+});
+
 app.use('/', routes);
-//app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

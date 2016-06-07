@@ -23,7 +23,13 @@ module.exports = function(sequelize, DataTypes) {
 									type: DataTypes.BOOLEAN,
 									defaultValue: false
 								}
-							});
+							},
+      						{ instanceMethods: {
+          						verifyPassword: function (password) {
+            						return encryptPassword(password, this.salt) === this.password;
+         						 }
+        					}    
+      });
 };
 /* encripta la password en claro
 *Mezcla la password en claro con el salt proporcionado, ejecuta un SHA1 digest,
